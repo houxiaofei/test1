@@ -55,20 +55,20 @@ byte a_pix[ROWS][COLUMNS];   // 采集灰度数组
 //*************************************************************************
 void FieldInputCapture(void)	//捕捉场中断 
 {
-	EMIOS_0.CH[5].CSR.B.FLAG = 1;//清除场中断标志位
-    EMIOS_0.CH[5].CCR.B.FEN=0;  //关闭场中断 
+	EMIOS_0.CH[6].CSR.B.FLAG = 1;//清除场中断标志位
+    EMIOS_0.CH[6].CCR.B.FEN=0;  //关闭场中断 
 	prow=0;pcolumn=0;crow=0;trow=1;
-	EMIOS_0.CH[6].CSR.B.FLAG = 1;  //清除行中断
-	EMIOS_0.CH[6].CCR.B.FEN=1;  //开行中断
+	EMIOS_0.CH[5].CSR.B.FLAG = 1;  //清除行中断
+	EMIOS_0.CH[5].CCR.B.FEN=1;  //开行中断
 }
 
 void RowInputCapture(void) 		//捕捉行中断
 {
 	crow++;
-	EMIOS_0.CH[6].CSR.B.FLAG = 1;  //清除行中断
+	EMIOS_0.CH[5].CSR.B.FLAG = 1;  //清除行中断
 	if(prow>ROWS-1)
 	{
-		EMIOS_0.CH[6].CCR.B.FEN=0; 	//关闭行中断
+		EMIOS_0.CH[5].CCR.B.FEN=0; 	//关闭行中断
 		fieldover=1; //采样结束
 	}
 	else if(crow>trow)
@@ -77,6 +77,8 @@ void RowInputCapture(void) 		//捕捉行中断
 		{
 			//a_pix[prow][pcolumn]=Y0+Y1<<1+Y2<<2+Y3<<3+Y4<<4+Y5<<5+Y6<<6+Y7<<7;
 			a_pix[prow][pcolumn]=Y0+Y1*2+Y2*4+Y3*8+Y4*16+Y5*32+Y6*64+Y7*128;
+			//a_pix[prow][pcolumn]=Y4*16+Y5*32+Y6*64+Y7*128;
+			//a_pix[prow][pcolumn]=Y5*32+Y6*64+Y7*128;
 		}
 		prow++;
 		trow+=3;
