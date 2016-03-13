@@ -82,22 +82,24 @@ void initEMIOS_0Image(void)
 	EMIOS_0.CH[0].CCR.B.MODE = 0x50; /* Modulus Counter Buffered (MCB) */
 	EMIOS_0.CH[0].CCR.B.BSL = 0x3;	/* Use internal counter */
 	
-	//A5场中断捕捉下降沿
-	EMIOS_0.CH[5].CCR.B.MODE = 0x02; // Mode is SAIC, continuous 
-	EMIOS_0.CH[5].CCR.B.BSL = 0x01; /* Use counter bus B (default) */
-	EMIOS_0.CH[5].CCR.B.EDSEL = 1;  //Both edges
-//	EMIOS_0.CH[5].CCR.B.EDPOL=0; //Edge Select falling edge
-//	EMIOS_0.CH[5].CCR.B.FEN=1;  //interupt enbale
-	SIU.PCR[5].R = 0x0102;  // Initialize pad for eMIOS channel Initialize pad for input 
-	INTC_InstallINTCInterruptHandler(FieldInputCapture,143,4);  
-	
-	//A6行中断捕捉上升沿
+	//B14场中断捕捉下降沿
 	EMIOS_0.CH[6].CCR.B.MODE = 0x02; // Mode is SAIC, continuous 
 	EMIOS_0.CH[6].CCR.B.BSL = 0x01; /* Use counter bus B (default) */
-	EMIOS_0.CH[6].CCR.B.EDPOL=1; //Edge Select rising edge
+	EMIOS_0.CH[6].CCR.B.EDSEL = 1;  //Both edges
+//	EMIOS_0.CH[5].CCR.B.EDPOL=0; //Edge Select falling edge
+//	EMIOS_0.CH[5].CCR.B.FEN=1;  //interupt enbale
+	SIU.PCR[30].R = 0x0102;  // Initialize pad for eMIOS channel Initialize pad for input
+	SIU.PSMI[16].R=1;//E0UC[6]选择B14
+	INTC_InstallINTCInterruptHandler(FieldInputCapture,144,4);
+	
+	//B14行中断捕捉上升沿
+	EMIOS_0.CH[5].CCR.B.MODE = 0x02; // Mode is SAIC, continuous 
+	EMIOS_0.CH[5].CCR.B.BSL = 0x01; /* Use counter bus B (default) */
+	EMIOS_0.CH[5].CCR.B.EDPOL=1; //Edge Select rising edge
 	//EMIOS_0.CH[7].CCR.B.FEN=1;  //interupt enbale
-	SIU.PCR[6].R = 0x0102;  // Initialize pad for eMIOS channel Initialize pad for input 
-	INTC_InstallINTCInterruptHandler(RowInputCapture,144,3); 
+	SIU.PCR[29].R = 0x0102;  // Initialize pad for eMIOS channel Initialize pad for input 
+	SIU.PSMI[15].R=1;//E0UC[5]选择B13
+	INTC_InstallINTCInterruptHandler(RowInputCapture,143,3); 
 	
 	//A3像素中断捕捉上升沿
 //	EMIOS_0.CH[3].CCR.B.MODE = 0x02; // Mode is SAIC, continuous 
@@ -119,8 +121,8 @@ void initLINFlex_0_UART(void)
 	DIV_M=LFDIV整数部分
 	DIV_F=LFDIV小数部分*16  */
       //38400:64M-104+3
-	LINFLEX_0.LINIBRR.B.DIV_M =43;  	//波特率设置38400:80M-130+3 57600:80M-86+13 115200:80M-43+6 
-	LINFLEX_0.LINFBRR.B.DIV_F =6;	//38400:64M-104+3
+	LINFLEX_0.LINIBRR.B.DIV_M =86;  	//波特率设置38400:80M-130+3 57600:80M-86+13 115200:80M-43+6 
+	LINFLEX_0.LINFBRR.B.DIV_F =13;	//38400:64M-104+3
     LINFLEX_0.UARTCR.B.UART=1;
 	LINFLEX_0.UARTCR.R=0x00000033;//8-bit data UART mode
 	LINFLEX_0.LINCR1.B.INIT=0; //退出初始化模式
@@ -133,14 +135,24 @@ void initLINFlex_0_UART(void)
 /*********************摄像头IO初始化***********************/
 void initTestIO(void)
 {
-	SIU.PCR[50].R = 0x0102;//D2_Y0
-	SIU.PCR[49].R = 0x0102;//D1_Y1
-	SIU.PCR[52].R = 0x0102;//D4_Y2
-	SIU.PCR[51].R = 0x0102;//D3_Y3
-	SIU.PCR[54].R = 0x0102;//D6_Y4
-    SIU.PCR[53].R = 0x0102;//D5_Y5
-	SIU.PCR[56].R = 0x0102;//D8_Y6
-	SIU.PCR[55].R = 0x0102;//D7_Y7
+//	SIU.PCR[50].R = 0x0102;//D2_Y0
+//	SIU.PCR[49].R = 0x0102;//D1_Y1
+//	SIU.PCR[52].R = 0x0102;//D4_Y2
+//	SIU.PCR[51].R = 0x0102;//D3_Y3
+//	SIU.PCR[54].R = 0x0102;//D6_Y4
+//    SIU.PCR[53].R = 0x0102;//D5_Y5
+//	SIU.PCR[56].R = 0x0102;//D8_Y6
+//	SIU.PCR[55].R = 0x0102;//D7_Y7
+	
+	//摄像头1
+		SIU.PCR[49].R = 0x0102;//   D1_Y3
+		SIU.PCR[50].R = 0x0102;//   D2_Y2
+		SIU.PCR[51].R = 0x0102;//   D3_Y5
+		SIU.PCR[52].R = 0x0102;//   D4_Y4
+		SIU.PCR[53].R = 0x0102;//   D5_Y7
+		SIU.PCR[54].R = 0x0102;//   D6_Y6
+		SIU.PCR[55].R = 0x0102;//   D7_Y1
+		SIU.PCR[56].R = 0x0102;//   D8_Y0
 	
 	SIU.PCR[12].R = 0x0200;//A12 LED0
 	SIU.PCR[13].R = 0x0200;//A13 LED1
